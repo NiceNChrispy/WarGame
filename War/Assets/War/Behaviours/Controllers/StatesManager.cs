@@ -20,6 +20,7 @@ namespace War
             public float moveAmount;
             public Vector3 moveDirection;
             public Vector3 aimPosition;
+            public Vector3 rotateDirection;
         }
 
 
@@ -32,6 +33,8 @@ namespace War
             public bool isRunning;
             public bool isInteracting;
         }
+
+        #region References
 
         public Animator anim;
         public GameObject activeModel;
@@ -52,10 +55,15 @@ namespace War
         [HideInInspector]
         public LayerMask ignoreForGround;
 
+        [HideInInspector]
         public Transform mTransform;
         public CharacterState charStates;
 
         public float delta;
+
+        #endregion
+
+        #region Init
 
         public void Init()
         {
@@ -117,6 +125,10 @@ namespace War
             }
         }
 
+        #endregion
+
+        #region FixedUpdate
+
         public void FixedTick(float d)
         {
             delta = d;
@@ -126,14 +138,15 @@ namespace War
                     states.onGround = OnGround();
                     if (states.isAiming)
                     {
-
+                        MovementAiming();
                     }
                     else
                     {
                         //on ground but not aiming
                         MovementNormal();
-                        RotationNormal();
                     }
+                    RotationNormal();
+
                     break;
                 case CharacterState.inAir:
                     rigid.drag = 0;
@@ -174,8 +187,12 @@ namespace War
 
         void RotationNormal()
         {
-            Vector3 targetDir = inp.moveDirection;
+            if (!states.isAiming)
+                inp.rotateDirection = inp.moveDirection;
+
+            Vector3 targetDir = inp.rotateDirection;
             targetDir.y = 0;
+
             if (targetDir == Vector3.zero)
             {
                 targetDir = mTransform.forward;
@@ -186,16 +203,9 @@ namespace War
             mTransform.rotation = targetRot;
         }
 
-        void HandleAnimationsNormal()
-        {
-            float anim_v = inp.moveAmount;
-            anim.SetFloat("vertical", anim_v, 0.15f, delta);
-        }
+#endregion
 
-        public void MovementAiming()
-        {
-            
-        }
+        #region Update
 
         public void Tick(float d)
         {
@@ -204,7 +214,7 @@ namespace War
             {
                 case CharacterState.normal:
                     states.onGround = OnGround();
-                    HandleAnimationsNormal();
+                    HandleAnimationsAll();
                     break;
                 case CharacterState.inAir:
                     states.onGround = OnGround();
@@ -218,6 +228,50 @@ namespace War
             }
         }
 
+        void HandleAnimationsAll()
+        {
+            anim.SetBool(StaticStrings.sprint, states.isRunning);
+            anim.SetBool(StaticStrings.aiming, states.isAiming);
+            anim.SetBool(StaticStrings.crouch, states.isCrouching);
+
+            if (states.isAiming)
+                HandleAnimationsAiming();
+            else
+                HandleAnimationsNormal();
+        }
+
+        void HandleAnimationsNormal()
+        {
+
+            if (inp.moveAmount > 0.05f)
+            {
+                rigid.drag = 0;
+            }
+            else
+            {
+                rigid.drag = 4; //Stops you from sliding away when you let go of the buttons
+            }
+
+            float anim_v = inp.moveAmount;
+            anim.SetFloat(StaticStrings.vertical, anim_v, 0.15f, delta);
+        }
+
+        void HandleAnimationsAiming()
+        {
+            float v = inp.vertical;
+            float h = inp.horizontal;
+            anim.SetFloat(StaticStrings.horizontal, h, 0.2f, delta);
+            anim.SetFloat(StaticStrings.vertical, v, 0.2f, delta);
+        }
+
+        public void MovementAiming()
+        {
+            float speed = stats.aimSpeed;
+            Vector3 dir = inp.moveDirection * speed;
+            rigid.velocity = dir;
+        }
+
+        #endregion 
 
         /// <summary>
         /// A grounded check

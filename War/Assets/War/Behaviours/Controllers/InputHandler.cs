@@ -39,6 +39,7 @@ namespace War
             isInit = true;
         }
 
+        #region FixedUpdate
         private void FixedUpdate()
         {
 
@@ -56,8 +57,8 @@ namespace War
 
         void GetInput_FixedUpdate()
         {
-            vertical = Input.GetAxis("Vertical");
-            horizontal = Input.GetAxis("Horizontal");
+            vertical = Input.GetAxis(StaticStrings.Vertical);
+            horizontal = Input.GetAxis(StaticStrings.Horizontal);
         }
 
         void InGame_UpdateStates_FixedUpdate()
@@ -71,7 +72,12 @@ namespace War
             moveDir += camHandler.mTransform.right * horizontal;
             moveDir.Normalize();
             statesMan.inp.moveDirection = moveDir;
+
+            statesMan.inp.rotateDirection = camHandler.mTransform.forward;
         }
+        #endregion
+
+        #region Update
 
         private void Update()
         {
@@ -96,6 +102,7 @@ namespace War
         }
 
     }
+    #endregion
 
     public enum GamePhase {inGame, inMenu }
 }

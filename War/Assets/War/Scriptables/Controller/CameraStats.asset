@@ -21,7 +21,7 @@ MonoBehaviour:
   normalZ: -3
   normalX: 0.3
   aimZ: -1
-  aimX: 0.3
+  aimX: 0.6
   normalY: 1.437
   crouchY: 1
   adaptSpeed: 9
