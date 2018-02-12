@@ -294,5 +294,5 @@ namespace War
         }
     }
 
-    public enum CharacterState {normal, inAir, cover, vaulting}
+    public enum CharacterState {normal, inAir, cover, vaulting, inVehicle}
 }
