@@ -79,8 +79,7 @@ namespace UnityStandardAssets.Vehicles.Aeroplane
             Quaternion target = surface.originalLocalRotation*rotation;
 
             // Slerp the surface's rotation towards the target rotation.
-            surface.transform.localRotation = Quaternion.Slerp(surface.transform.localRotation, target,
-                                                               m_Smoothing*Time.deltaTime);
+            //surface.transform.localRotation = Quaternion.Slerp(surface.transform.localRotation, target, m_Smoothing*Time.deltaTime);
         }
 
 

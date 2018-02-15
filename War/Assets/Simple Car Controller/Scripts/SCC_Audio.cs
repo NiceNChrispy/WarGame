@@ -28,10 +28,13 @@ public class SCC_Audio : MonoBehaviour {
 	public float minimumPitch = .75f;
 	public float maximumPitch = 1.25f;
 
+    Transport car;
+
 	void Start () {
 
 		drivetrain = GetComponent<SCC_Drivetrain> ();
 		inputs = GetComponent<SCC_Inputs> ();
+        car = GetComponent<Transport>();
 
 		GameObject engineOnGO = new GameObject ("Engine On AudioSource");
 		engineOnGO.transform.SetParent (transform, false);
@@ -53,16 +56,26 @@ public class SCC_Audio : MonoBehaviour {
 
 	void Update () {
 
-		if (!drivetrain || !inputs) {
-			enabled = false;
-			return;
-		}
-	
-		engineOnSource.volume = Mathf.Lerp(minimumVolume, maximumVolume, inputs.gas);
-		engineOffSource.volume = Mathf.Lerp(maximumVolume, 0f, inputs.gas);
+        if (!drivetrain || !inputs && !car.inUse)
+        {
+            engineOnSource.enabled = false;
+            engineOffSource.enabled = false;
+            enabled = false;
+            return;
+        }
+        else
+        {
+            engineOnSource.enabled = true;
+            engineOffSource.enabled = true;
+            engineOnSource.volume = Mathf.Lerp(minimumVolume, maximumVolume, inputs.gas);
+		    engineOffSource.volume = Mathf.Lerp(maximumVolume, 0f, inputs.gas);
 
-		engineOnSource.pitch = Mathf.Lerp(minimumPitch, maximumPitch, drivetrain.engineRPM / drivetrain.maximumEngineRPM);
-		engineOffSource.pitch = engineOnSource.pitch;
+		    engineOnSource.pitch = Mathf.Lerp(minimumPitch, maximumPitch, drivetrain.engineRPM / drivetrain.maximumEngineRPM);
+		    engineOffSource.pitch = engineOnSource.pitch;
+        }
+
+
+
 
 	}
 

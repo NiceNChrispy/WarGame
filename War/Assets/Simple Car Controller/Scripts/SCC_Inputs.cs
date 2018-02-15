@@ -20,22 +20,27 @@ public class SCC_Inputs : MonoBehaviour {
 	internal float steering;
 	internal float handbrake;
 
+    private Transport car;
+
 	void Start(){
 
 		drivetrain = GetComponent<SCC_Drivetrain> ();
+        car = GetComponent<Transport>();
 
 	}
 
 	void Update(){
+        if (car.inUse)
+        {
+            if (!drivetrain)
+            {
+                enabled = false;
+                return;
+            }
 
-		if (!drivetrain) {
-			enabled = false;
-			return;
-		}
-
-		ReceiveInputs ();
-		FeedDrivetrain ();
-
+            ReceiveInputs();
+            FeedDrivetrain();
+        }
 	}
 
 	void ReceiveInputs () {
